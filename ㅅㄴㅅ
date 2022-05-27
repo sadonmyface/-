@@ -1,0 +1,53 @@
+#학생2
+import requests 
+from bs4 import BeautifulSoup
+
+cnt = 0
+year = int(input())
+date = []
+title = []
+
+url = f'https://movie.daum.net/ranking/boxoffice/yearly?date={year}'
+
+response = requests.get(url)
+
+# 개봉날짜, 관객수
+if response.status_code == 200 :
+  html = response.text 
+  soup = BeautifulSoup(html,'html.parser')
+  test = soup.find_all('span',{'class':'info_txt'})
+  for code in test :
+    cnt+=1
+    date.append(code.get_text())
+    if cnt == 100 :
+      break
+else :
+  print('연결되지않음')
+  print(response.status_code)
+
+# 제목
+if response.status_code == 200 :
+  html = response.text 
+  soup = BeautifulSoup(html,'html.parser')
+  test = soup.find_all('a',{'class':'link_txt'})
+  for code in test:
+    cnt+=1
+    title.append(code.get_text())
+    if cnt == 50 :
+      break
+else :
+  print('연결되지않음')
+  print(response.status_code)
+
+# 제목 입력 -> 개봉날짜, 관객수 
+user = input()
+n = title.index(user)
+print(date[2*n])
+print(date[2*n+1])
+
+want_f = open(f'./rank_{user}.txt','w')
+for day,people in date :
+    day=date[2*n]
+    people=date[2*n+1]
+    print('개봉날짜: ', day \n '관객수: ', people)
+    want_f.write(f'개봉날짜 {day} \n 관객수 {people}')
